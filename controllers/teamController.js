@@ -1,9 +1,9 @@
-const Teams = require('../model/TeamModel');
 const User = require('../model/UserModel');
+const Team = require('../model/TeamModel');
 
 const getAllTeams = async (req,res)=>{
     try{
-        const teams = await Teams.findAll();
+        const teams = await Team.findAll();
         res.status(200).json({teams})
     }
     catch(err){
@@ -14,9 +14,16 @@ const getAllTeams = async (req,res)=>{
 
 const createTeam = async (req,res)=>{
     try{
-        const {teamname,teamsize} = req.body;
-        const newteam = await Teams.create({teamname,teamsize})
-        res.status(200).json({newteam})
+        const {teamname,teamDescription,teamsize,userId} = req.body;
+        const newTeam = await Team.create({
+            teamname,
+            teamDescription,
+            teamsize,
+            teamLeader: userId
+        });
+
+        await User.update({ teamId: newTeam.id }, { where: { id: userId } });
+        res.status(200).json({message:"success",newTeam})
     }
     catch(err){
         res.status(501).send(err);
@@ -26,8 +33,21 @@ const createTeam = async (req,res)=>{
 const joinTeam = async (req,res)=>{
     try{
         const {userId,teamId} = req.body;
-        const [updatedRows] = await User.update({teamId},{where : {id:userId}})
-        if(updatedRows===0) return res.status(404).json({error: "User not found"})
+       const team = await Team.findByPk(teamId)
+       if(!team){
+           return res.status(404).json({ message: "Team not found" });
+        }
+        
+        const user = await User.findByPk(userId);
+        
+        if(!user){
+            return res.status(404).json({ message: "User not found" });
+        }
+        
+        await team.addMember(userId);
+        user.teamId = team.id;
+        await user.save();
+        
         res.status(200).json({message:"User updated successfully"});
     }
     catch(err){
@@ -37,10 +57,23 @@ const joinTeam = async (req,res)=>{
 
 const leaveTeam = async(req,res)=>{
     try{
-        const {userId} = req.body;
-        const teamId = null;
-        const [updatedRows] = await User.update({teamId},{where : {id:userId}})
-        if(updatedRows===0) return res.status(404).json({error: "User not found"})
+        const {userId,teamId} = req.body;
+
+        const team = await Team.findByPk(teamId);
+        if(!team) return res.status(404).json({message:"Team not found"})
+       
+        const user =  await User.findByPk(userId);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        if (team.teamLeader === userId) {
+            return res.status(400).json({ message: "Cannot remove the team leader" });
+        }
+        await team.removeMember(userId);
+        // may be change users teamId
+        user.teamId = null;
+        await user.save();
         res.status(200).json({message:"User updated successfully"});
     }
     catch(err){
@@ -61,4 +94,15 @@ const getTeamMembers = async(req,res) =>{
 
 }
 
-module.exports = {getAllTeams,createTeam,joinTeam,leaveTeam,getTeamMembers}
+const deleteTeam = async(req,res)=>{
+    try{
+        const {teamId} = req.body;
+        await Team.destroy({where:{id:teamId}})
+        res.status(200).json({message:"Success"})
+    }
+    catch(e){
+        res.status(500).send(e)
+    }
+}
+
+module.exports = {getAllTeams,createTeam,joinTeam,leaveTeam,getTeamMembers,deleteTeam}

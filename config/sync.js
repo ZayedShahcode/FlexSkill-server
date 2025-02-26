@@ -2,6 +2,7 @@ const sequelize = require('./database')
 const User = require('../model/UserModel')
 const Team = require('../model/TeamModel')
 
+require('../model/associations')
 
 //Sync function
 

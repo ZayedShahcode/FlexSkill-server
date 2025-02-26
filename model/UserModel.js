@@ -1,39 +1,31 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../config/database')
-const Team = require('./TeamModel')
+const sequelize = require('../config/database');
 
-const User = sequelize.define('User',{
-    username : {
+const User = sequelize.define('User', {
+    username: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique:true
+        unique: true
     },
-    email : {
+    email: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true  
+        unique: true
     },
-    password : {
+    password: {
         type: DataTypes.STRING,
-        allowNull: false,
-        
+        allowNull: false
     },
-    //foreign key
     teamId: {
         type: DataTypes.INTEGER,
         references: {
-            model: Team,
+            model: 'Teams', // Use the table name as a string
             key: 'id'
         },
-        allowNull: true 
+        allowNull: true
     }
-},{
-    timestamps:true
+}, {
+    timestamps: true
 });
-
-// Relationships
-User.belongsTo(Team,{foreignKey:'teamId',onDelete:'SET NULL'})
-Team.hasMany(User,{foreignKey:'teamId'})
-
 
 module.exports = User;

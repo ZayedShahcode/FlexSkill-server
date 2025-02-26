@@ -3,6 +3,8 @@ const {getUser,addUser, loginUser, deleteAll} = require('../controllers/userCont
 const {userVerification} = require('../middlewares/AuthMiddleware')
 const userRouter = express.Router();
 
+// /user
+
 userRouter.route('/')
 .post(loginUser)
 

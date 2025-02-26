@@ -3,6 +3,8 @@ const {getDashBoard, getUserTeam} = require('../controllers/dashController')
 
 const dashRouter = express.Router();
 
+//  /dash
+
 dashRouter.route('/:id')
 .get(getUserTeam)
 
