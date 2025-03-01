@@ -14,7 +14,7 @@ const getAllTeams = async (req,res)=>{
 
 const createTeam = async (req,res)=>{
     try{
-        const {teamname,teamDescription,teamsize,userId} = req.body;
+        const {teamname,teamDescription,teamsize,userId,username} = req.body;
         const newTeam = await Team.create({
             teamname,
             teamDescription,
@@ -37,17 +37,14 @@ const joinTeam = async (req,res)=>{
        if(!team){
            return res.status(404).json({ message: "Team not found" });
         }
-        
         const user = await User.findByPk(userId);
         
         if(!user){
             return res.status(404).json({ message: "User not found" });
         }
-        
         await team.addMember(userId);
         user.teamId = team.id;
         await user.save();
-        
         res.status(200).json({message:"User updated successfully"});
     }
     catch(err){
@@ -81,18 +78,36 @@ const leaveTeam = async(req,res)=>{
     }
 }
 
-const getTeamMembers = async(req,res) =>{
-    try{
+const getTeamMembers = async (req, res) => {
+    try {
         const teamId = req.params.id;
-        const users = await User.findAll({where:{teamId}})
-        if(!users) return res.status(404).json({error:"No users found"})
-        res.status(200).json({users})
-    }
-    catch{
-        res.status(500).json({error:"Internal server error"})
-    }
+        const team = await Team.findByPk(teamId);
 
-}
+        if (!team) {
+            return res.status(404).json({ error: "Cannot find team" });
+        }
+
+        const users = team.members; 
+
+        if (!users || users.length === 0) {
+            return res.status(200).json({ members: [] });
+        }
+
+        const members = await Promise.all(
+            users.map(async (userId) => {
+                const user = await User.findByPk(userId);
+                return user ? user.dataValues.username : null;
+            })
+        );
+
+        res.status(200).json({ members: members.filter((name) => name !== null) });
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
+
 
 const deleteTeam = async(req,res)=>{
     try{
