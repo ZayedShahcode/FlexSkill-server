@@ -4,13 +4,14 @@ const {getAllTeams, createTeam, joinTeam, leaveTeam, getTeamMembers, deleteTeam}
 // /team 
 
 const teamRouter = express.Router();
-teamRouter.route('/:id') 
-.get(getTeamMembers)
 
 teamRouter.route('/')
 .get(getAllTeams)
 .post(createTeam)
 .delete(deleteTeam)
+
+teamRouter.route('/:id') 
+.get(getTeamMembers)
 
 teamRouter.route('/join')
 .patch(joinTeam)

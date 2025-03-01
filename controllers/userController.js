@@ -3,7 +3,20 @@ const bcrypt = require('bcrypt')
 const dotenv = require('dotenv').config();
 const createToken = require('../utils/helpers')
 
+
 const getUser = async(req,res)=>{
+    try{
+        const userId =  req.body;
+        const user = await User.findByPk(userId);
+        if(!user) req.status(404).send("User not found");
+        req.status(200).json({user});
+    }
+    catch(e){
+        req.status(500).json({"Error" : e});
+    }
+}
+
+const getUsers = async(req,res)=>{
     try{
         const users = await User.findAll();
         res.status(200).json({
@@ -73,5 +86,5 @@ const deleteAll = async (req,res)=>{
 
 
 
-module.exports = {getUser,addUser,loginUser,deleteAll}
+module.exports = {getUser,getUsers,addUser,loginUser,deleteAll}
 

@@ -45,7 +45,7 @@ const Team = sequelize.define('Team', {
 
 Team.prototype.addMember = async function (userId) {
     
-    if (this.numberOfPeople >= this.teamsize) {
+    if (this.numberOfPeople > this.teamsize) {
         throw new Error("Cannot add more members. The team is already full");
     }
 

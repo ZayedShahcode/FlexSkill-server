@@ -1,16 +1,17 @@
 const express = require('express')
-const {getUser,addUser, loginUser, deleteAll} = require('../controllers/userController')
+const {getUser,getUsers,addUser, loginUser, deleteAll} = require('../controllers/userController')
 const {userVerification} = require('../middlewares/AuthMiddleware')
 const userRouter = express.Router();
 
 // /user
 
 userRouter.route('/')
+.get(getUser)
 .post(loginUser)
 
 
 userRouter.route('/new')
-.get(getUser)
+.get(getUsers)
 .post(addUser)
 
 userRouter.route('/verify')
