@@ -17,14 +17,6 @@ const getUserTeam = async (req, res) => {
             return res.status(404).json({ error: "Team not found" });
         }
 
-        await Promise.all(
-            teams.map(async (team) => {
-                const user = await User.findByPk(team.teamLeader);
-                if (user) {
-                    team.teamLeader = user.username;
-                }
-            })
-        );
 
         res.status(200).json({ userTeam: teams });
     } catch (err) {

@@ -14,12 +14,15 @@ const getAllTeams = async (req,res)=>{
 
 const createTeam = async (req,res)=>{
     try{
-        const {teamname,teamDescription,teamsize,userId,username} = req.body;
+        const {teamname,teamDescription,teamsize,details,userId,username,githubLink} = req.body;
         const newTeam = await Team.create({
             teamname,
             teamDescription,
             teamsize,
-            teamLeader: userId
+            githubLink,
+            details,
+            teamLeader: userId,
+            leaderName: username
         });
 
         await User.update({ teamId: newTeam.id }, { where: { id: userId } });

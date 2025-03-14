@@ -18,6 +18,9 @@ const Team = sequelize.define('Team', {
             key: 'id'
         }
     },
+    leaderName : {
+        type: DataTypes.STRING,
+    },
     githubLink: {
         type: DataTypes.STRING,
         validate: {
@@ -37,6 +40,10 @@ const Team = sequelize.define('Team', {
         type: DataTypes.INTEGER,
         allowNull: false,
         defaultValue: 1
+    },
+    details: {
+        type:DataTypes.TEXT,
+        allowNull: true
     }
 }, {
     timestamps: true
