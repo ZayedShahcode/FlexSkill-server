@@ -16,6 +16,13 @@ const User = sequelize.define('User', {
         type: DataTypes.STRING,
         allowNull: false
     },
+    githubProfile: {
+        type: DataTypes.STRING,
+        allowNull: true,
+        validate: {
+            isUrl: true
+        }
+    },
     teamId: {
         type: DataTypes.INTEGER,
         references: {

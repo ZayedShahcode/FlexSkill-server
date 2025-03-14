@@ -30,10 +30,15 @@ const getUsers = async(req,res)=>{
 }
 
 const addUser = async (req,res,next)=>{
-    const {username,email,password} = req.body;
+    const {username, email, password, githubProfile} = req.body;
     try{
         const hashedPassword = await bcrypt.hash(password,10);
-        const user = await User.create({username,email,password:hashedPassword});
+        const user = await User.create({
+            username,
+            email,
+            password: hashedPassword,
+            githubProfile: githubProfile || null
+        });
         const token = createToken(user.id);
         res.cookie("token",token,{
             withCredentials: true,
@@ -59,12 +64,21 @@ const loginUser = async(req,res,next)=>{
         const isValidPassword = await bcrypt.compare(password,hashedPassword);
         if(!isValidPassword) return res.status(401).json({error:"Invalid Credentials"})
         const token = createToken(user.id);
-    res.cookie("token",token,{
-        withCredentials:true,
-        httpOnly:true
-    })
+        res.cookie("token",token,{
+            withCredentials:true,
+            httpOnly:true
+        })
         return res.status(200).json({
-            message: "User logged in successfully", success: true,token
+            message: "User logged in successfully", 
+            success: true,
+            token,
+            user: {
+                id: user.id,
+                username: user.username,
+                email: user.email,
+                teamId: user.teamId,
+                githubProfile: user.githubProfile
+            }
         })
         next();
     }
@@ -83,8 +97,35 @@ const deleteAll = async (req,res)=>{
     }
 }
 
+const logoutUser = async (req, res) => {
+    try {
+        res.clearCookie("token", {
+            withCredentials: true,
+            httpOnly: true
+        });
+        return res.status(200).json({ message: "Logged out successfully" });
+    } catch (err) {
+        return res.status(500).json({ error: "Error logging out" });
+    }
+};
 
+const getUserById = async (req, res) => {
+    try {
+        const userId = req.params.id;
+        const user = await User.findByPk(userId, {
+            attributes: { exclude: ['password'] }
+        });
+        
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+        
+        res.status(200).json({ user });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal server error" });
+    }
+};
 
-
-module.exports = {getUser,getUsers,addUser,loginUser,deleteAll}
+module.exports = {getUser,getUsers,addUser,loginUser,deleteAll,logoutUser,getUserById}
 

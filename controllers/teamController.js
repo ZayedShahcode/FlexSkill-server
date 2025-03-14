@@ -99,11 +99,14 @@ const getTeamMembers = async (req, res) => {
         const members = await Promise.all(
             users.map(async (userId) => {
                 const user = await User.findByPk(userId);
-                return user ? user.dataValues.username : null;
+                return user ? {
+                    id: user.dataValues.id,
+                    username: user.dataValues.username
+                } : null;
             })
         );
 
-        res.status(200).json({ members: members.filter((name) => name !== null) });
+        res.status(200).json({ members: members.filter((member) => member !== null) });
 
     } catch (error) {
         console.error(error);
