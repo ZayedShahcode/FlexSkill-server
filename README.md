@@ -1,4 +1,4 @@
-A Node.js backend service for the FlexSkill application, providing user authentication, team management, and profile features.
+A ExpressJS backend service for the FlexSkill application, providing user authentication, team management, and profile features.
 
 # FlexSkill Backend
 
