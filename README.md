@@ -1,6 +1,6 @@
-# FlexSkill Backend
+A ExpressJS backend service for the FlexSkill application, providing user authentication, team management, and profile features.
 
-A Node.js backend service for the FlexSkill application, providing user authentication, team management, and profile features.
+# FlexSkill Backend
 
 ## Tech Stack
 
@@ -128,15 +128,7 @@ backend/
 - createdAt
 - updatedAt
 
-## Error Handling
 
-The API uses standard HTTP status codes:
-- 200: Success
-- 201: Created
-- 400: Bad Request
-- 401: Unauthorized
-- 404: Not Found
-- 500: Internal Server Error
 
 ## Contributing
 
@@ -145,6 +137,4 @@ The API uses standard HTTP status codes:
 3. Make your changes
 4. Submit a pull request
 
-## License
 
-This project is licensed under the MIT License. 
