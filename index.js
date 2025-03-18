@@ -15,14 +15,27 @@ const app = express();
 
 const allowedOrigins = [`${process.env.FRONTEND_URL}`]
 
-app.use(cors({
-    origin: allowedOrigins,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-    credentials: true
-}));
+app.use((req, res, next) => {
+    const origin = req.get('Origin');
+    
+    if (allowedOrigins.includes(origin)) {
+        res.header('Access-Control-Allow-Origin', origin);
+    } else {
+        res.header('Access-Control-Allow-Origin', ''); // Or set to null if you prefer
+    }
 
-app.options('*', cors());
+    res.header('Access-Control-Allow-Methods', 'GET, POST,PATCH, PUT, DELETE, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+    res.header('Access-Control-Allow-Credentials', 'true');
+
+    // Handle preflight requests
+    if (req.method === 'OPTIONS') {
+        res.sendStatus(204); // No content
+        return;
+    }
+
+    next();
+});
 
 app.use(express.json())
 
