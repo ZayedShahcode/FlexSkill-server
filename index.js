@@ -16,23 +16,14 @@ const app = express();
 const allowedOrigins = [`${process.env.FRONTEND_URL}`]
 
 app.use(cors({
-    origin: function (origin, callback) {
-        if (!origin || allowedOrigins.includes(origin)) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
+    origin: allowedOrigins,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true
 }));
 
-app.use(cookieparser());
-app.use(cors({
-    origin: `${process.env.FRONTEND_URL}`,
-    credentials: true,
-}));
+app.options('*', cors());
+
 app.use(express.json())
 
 
